@@ -1,7 +1,7 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
 import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
-import * as WebBrowser from "expo-web-browser";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { api } from "../services/api";
 
 interface UserProps {
   name: String;
@@ -45,15 +45,29 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
   }
 
   async function signInGoogle(access_token: string) {
-    console.log("Token", access_token);
+    try {
+      setIsUserLoading(true);
+
+      const tokenResponse = await api.post("/users", { access_token });
+      api.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${tokenResponse.data.token}`;
+
+      const userInfoResponse = await api.get("/me");
+      setUser(userInfoResponse.data.user);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    } finally {
+      setIsUserLoading(false);
+    }
   }
 
-  /*   useEffect(() => {
+  useEffect(() => {
     if (response?.type === "success" && response.authentication?.accessToken) {
       signInGoogle(response.authentication.accessToken);
     }
-    console.log(response.type);
-  }, []); */
+  }, [response]);
 
   return (
     <AuthContext.Provider value={{ signIn, user, isUserLoading }}>

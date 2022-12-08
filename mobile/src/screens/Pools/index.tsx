@@ -6,10 +6,12 @@ import { Header } from "../../components/Header";
 import { Loading } from "../../components/Loading";
 import { PoolCard, PoolCardPros } from "../../components/PoolCard";
 import { Octicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 export function Pools() {
   const [isLoading, setIsLoading] = useState(false);
   const [pools, setPools] = useState<PoolCardPros[]>([]);
+  const navigation = useNavigation();
 
   return (
     <VStack flex={1} bgColor="gray.900">
@@ -28,7 +30,7 @@ export function Pools() {
           leftIcon={
             <Icon as={Octicons} name="search" color="black" size="md" />
           }
-          onPress={() => {} /* navigate('find') */}
+          onPress={() => navigation.navigate("find")}
         />
       </VStack>
 
@@ -41,7 +43,7 @@ export function Pools() {
           renderItem={({ item }) => (
             <PoolCard
               data={item}
-              onPress={() => {} /* navigate('details', { id: item.id }) */}
+              onPress={() => navigation.navigate("details", { id: item.id })}
             />
           )}
           ListEmptyComponent={<EmptyPoolList />}
